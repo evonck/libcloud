@@ -136,14 +136,15 @@ class AWSGenericResponse(AWSBaseResponse):
 class AWSTokenConnection(ConnectionUserAndKey):
     def __init__(self, user_id, key, secure=True,
                  host=None, port=None, url=None, timeout=None, proxy_url=None,
-                 token=None, retry_delay=None, backoff=None):
+                 token=None, retry_delay=None, backoff=None, correlation_id=None):
         self.token = token
         super(AWSTokenConnection, self).__init__(user_id, key, secure=secure,
                                                  host=host, port=port, url=url,
                                                  timeout=timeout,
                                                  retry_delay=retry_delay,
                                                  backoff=backoff,
-                                                 proxy_url=proxy_url)
+                                                 proxy_url=proxy_url,
+                                                 correlation_id=correlation_id)
 
     def add_default_params(self, params):
         # Even though we are adding it to the headers, we need it here too
@@ -352,14 +353,15 @@ class SignedAWSConnection(AWSTokenConnection):
     def __init__(self, user_id, key, secure=True, host=None, port=None,
                  url=None, timeout=None, proxy_url=None, token=None,
                  retry_delay=None, backoff=None,
-                 signature_version=DEFAULT_SIGNATURE_VERSION):
+                 signature_version=DEFAULT_SIGNATURE_VERSION, correlation_id=None):
         super(SignedAWSConnection, self).__init__(user_id=user_id, key=key,
                                                   secure=secure, host=host,
                                                   port=port, url=url,
                                                   timeout=timeout, token=token,
                                                   retry_delay=retry_delay,
                                                   backoff=backoff,
-                                                  proxy_url=proxy_url)
+                                                  proxy_url=proxy_url,
+                                                  correlation_id=correlation_id)
         self.signature_version = str(signature_version)
 
         if self.signature_version == '2':
