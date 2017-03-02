@@ -338,11 +338,12 @@ class Connection(object):
     cache_busting = False
     backoff = None
     retry_delay = None
+    correlation_id = None
 
     allow_insecure = True
 
     def __init__(self, secure=True, host=None, port=None, url=None,
-                 timeout=None, proxy_url=None, retry_delay=None, backoff=None):
+                 timeout=None, proxy_url=None, retry_delay=None, backoff=None, correlation_id=None):
         self.secure = secure and 1 or 0
         self.ua = []
         self.context = {}
@@ -365,7 +366,8 @@ class Connection(object):
                 self.port = 443
             else:
                 self.port = 80
-
+        if correlation_id is not None:
+            self.correlation_id = correlation_id
         if url:
             (self.host, self.port, self.secure,
              self.request_path) = self._tuple_from_url(url)
@@ -605,7 +607,8 @@ class Connection(object):
                 url = '?'.join((action, urlencode(params, doseq=True)))
         else:
             url = action
-
+        if self.correlation_id is not None:
+            headers.update({'X-Correlation-Id': self.correlation_id})
         # IF connection has not yet been established
         if self.connection is None:
             self.connect()
@@ -863,7 +866,7 @@ class ConnectionKey(Connection):
     Base connection class which accepts a single ``key`` argument.
     """
     def __init__(self, key, secure=True, host=None, port=None, url=None,
-                 timeout=None, proxy_url=None, backoff=None, retry_delay=None):
+                 timeout=None, proxy_url=None, backoff=None, retry_delay=None, correlation_id=None):
         """
         Initialize `user_id` and `key`; set `secure` to an ``int`` based on
         passed value.
@@ -873,7 +876,7 @@ class ConnectionKey(Connection):
                                             timeout=timeout,
                                             proxy_url=proxy_url,
                                             backoff=backoff,
-                                            retry_delay=retry_delay)
+                                            correlation_id=correlation_id)
         self.key = key
 
 
@@ -882,7 +885,7 @@ class CertificateConnection(Connection):
     Base connection class which accepts a single ``cert_file`` argument.
     """
     def __init__(self, cert_file, secure=True, host=None, port=None, url=None,
-                 proxy_url=None, timeout=None, backoff=None, retry_delay=None):
+                 proxy_url=None, timeout=None, backoff=None, retry_delay=None, correlation_id='d3bd70f1-b373-4524-982d-bf13cf5b9187'):
         """
         Initialize `cert_file`; set `secure` to an ``int`` based on
         passed value.
@@ -901,18 +904,18 @@ class ConnectionUserAndKey(ConnectionKey):
     """
     Base connection class which accepts a ``user_id`` and ``key`` argument.
     """
-
     user_id = None
 
     def __init__(self, user_id, key, secure=True, host=None, port=None,
                  url=None, timeout=None, proxy_url=None,
-                 backoff=None, retry_delay=None):
+                 backoff=None, retry_delay=None, correlation_id='d3bd70f1-b373-4524-982d-bf13cf5b9187'):
         super(ConnectionUserAndKey, self).__init__(key, secure=secure,
                                                    host=host, port=port,
                                                    url=url, timeout=timeout,
                                                    backoff=backoff,
                                                    retry_delay=retry_delay,
-                                                   proxy_url=proxy_url)
+                                                   proxy_url=proxy_url,
+                                                   correlation_id=correlation_id)
         self.user_id = user_id
 
 
@@ -976,7 +979,9 @@ class BaseDriver(object):
         conn_kwargs.update({'timeout': kwargs.pop('timeout', None),
                             'retry_delay': kwargs.pop('retry_delay', None),
                             'backoff': kwargs.pop('backoff', None),
+                            'correlation_id': kwargs.pop('correlation_id', None),
                             'proxy_url': kwargs.pop('proxy_url', None)})
+
         self.connection = self.connectionCls(*args, **conn_kwargs)
 
         self.connection.driver = self
