@@ -40,6 +40,7 @@ from libcloud.dns.base import DNSDriver, Zone, Record
 from libcloud.common.types import LibcloudError
 from libcloud.common.aws import AWSGenericResponse, AWSTokenConnection
 from libcloud.common.base import ConnectionUserAndKey
+from libcloud.common.aws import AWSBaseResponse, SignedAWSConnection
 
 
 API_VERSION = '2012-02-29'
@@ -99,12 +100,30 @@ class BaseRoute53Connection(ConnectionUserAndKey):
 class Route53Connection(AWSTokenConnection, BaseRoute53Connection):
     pass
 
+class Route53ConnectionV4(SignedAWSConnection, BaseRoute53Connection):
+    """
+    Represents a single connection to the Route53 Endpoint.
+    """
+
+    version = API_VERSION
+    host = API_HOST
+    service_name = 'route53'
+    responseCls = Route53DNSResponse
+    def __init__(self, user_id, key, secure=True, host=None, port=None,
+                 url=None, timeout=None, proxy_url=None, token=None,
+                 retry_delay=None, backoff=None, correlation_id=None):
+        super(Route53ConnectionV4, self).__init__(
+            user_id, key, secure, host,
+            port, url, timeout, proxy_url,
+            token, retry_delay, backoff,
+            4, correlation_id)  # force version 4
+
 
 class Route53DNSDriver(DNSDriver):
     type = Provider.ROUTE53
     name = 'Route53 DNS'
     website = 'http://aws.amazon.com/route53/'
-    connectionCls = Route53Connection
+    connectionCls = Route53ConnectionV4
 
     RECORD_TYPE_MAP = {
         RecordType.A: 'A',
@@ -118,6 +137,7 @@ class Route53DNSDriver(DNSDriver):
         RecordType.SRV: 'SRV',
         RecordType.TXT: 'TXT',
     }
+    region_name = 'us-east-1'
 
     def __init__(self, *args, **kwargs):
         self.token = kwargs.pop('token', None)
