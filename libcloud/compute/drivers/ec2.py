@@ -3174,12 +3174,8 @@ class EC2Response(AWSBaseResponse):
             raise InvalidCredsError(msg)
 
         try:
-            print("self.body")
-            print(self.body)
             body = ET.XML(self.body)
         except Exception as e:
-            print('e')
-            print(e)
             raise MalformedResponseError("Failed to parse XML",
                                          body=self.body, driver=EC2NodeDriver)
 
@@ -3636,7 +3632,9 @@ class BaseEC2NodeDriver(NodeDriver):
         if ex_filters:
             params.update(self._build_filters(ex_filters))
 
-        elem = self.connection.request(self.path, params=params).object
+        test = self.connection.request(self.path, params=params)
+        print(test)
+        elem = test.object
 
         print('elem')
         print(elem)
