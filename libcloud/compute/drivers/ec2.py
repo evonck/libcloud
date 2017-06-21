@@ -3174,6 +3174,8 @@ class EC2Response(AWSBaseResponse):
             raise InvalidCredsError(msg)
 
         try:
+            print("self.status")
+            print(self.status)
             body = ET.XML(self.body)
         except Exception as e:
             raise MalformedResponseError("Failed to parse XML",
