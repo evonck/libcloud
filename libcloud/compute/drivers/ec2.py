@@ -3175,7 +3175,9 @@ class EC2Response(AWSBaseResponse):
 
         try:
             body = ET.XML(self.body)
-        except:
+        except Exception as e:
+            print('e')
+            print(e)
             raise MalformedResponseError("Failed to parse XML",
                                          body=self.body, driver=EC2NodeDriver)
 
@@ -3624,6 +3626,7 @@ class BaseEC2NodeDriver(NodeDriver):
         """
 
         params = {'Action': 'DescribeInstances'}
+        print('Get List Instances')
 
         if ex_node_ids:
             params.update(self._pathlist('InstanceId', ex_node_ids))
@@ -3633,17 +3636,22 @@ class BaseEC2NodeDriver(NodeDriver):
 
         elem = self.connection.request(self.path, params=params).object
 
+        print('elem')
+        print(elem)
         nodes = []
         for rs in findall(element=elem, xpath='reservationSet/item',
                           namespace=NAMESPACE):
             nodes += self._to_nodes(rs, 'instancesSet/item')
 
+        print("nodes")
+        print(nodes)
         nodes_elastic_ips_mappings = self.ex_describe_addresses(nodes)
 
         for node in nodes:
             ips = nodes_elastic_ips_mappings[node.id]
             node.public_ips.extend(ips)
 
+        print("nodes")
         return nodes
 
     def list_sizes(self, location=None):
