@@ -3174,6 +3174,8 @@ class EC2Response(AWSBaseResponse):
             raise InvalidCredsError(msg)
 
         try:
+            print("self.body")
+            print(self.body)
             body = ET.XML(self.body)
         except Exception as e:
             print('e')
