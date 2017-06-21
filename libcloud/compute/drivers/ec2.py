@@ -3172,10 +3172,10 @@ class EC2Response(AWSBaseResponse):
         msg = "Failure: 403 Forbidden"
         if self.status == 403 and self.body[:len(msg)] == msg:
             raise InvalidCredsError(msg)
+        if self.status == 504 :
+            raise MalformedResponseError("Server took too long to respond")
 
         try:
-            print("self.status")
-            print(self.status)
             body = ET.XML(self.body)
         except Exception as e:
             raise MalformedResponseError("Failed to parse XML",
@@ -3626,7 +3626,6 @@ class BaseEC2NodeDriver(NodeDriver):
         """
 
         params = {'Action': 'DescribeInstances'}
-        print("list all")
 
         if ex_node_ids:
             params.update(self._pathlist('InstanceId', ex_node_ids))
@@ -3648,8 +3647,6 @@ class BaseEC2NodeDriver(NodeDriver):
             ips = nodes_elastic_ips_mappings[node.id]
             node.public_ips.extend(ips)
 
-        print("nodes")
-        print(nodes)
         return nodes
 
     def list_sizes(self, location=None):
