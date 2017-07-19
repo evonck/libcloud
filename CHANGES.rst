@@ -1,11 +1,15 @@
 ﻿Changelog
 =========
 
-Changes in current version of Apache Libcloud
----------------------------------------------
+Changes in Apache Libcloud 2.1.0
+--------------------------------
 
 Common
 ~~~~~~
+
+- [AWS] Update prices and fix some region names
+  [GITHUB-1056]
+  (Francisco Ros)
 
 - Fix bug in utils.decorators wrap exception method, used by vsphere driver
   [GITHUB-1054]
@@ -25,6 +29,24 @@ Common
 
 Compute
 ~~~~~~~
+
+- [OPENSTACK] Add support for Nova 2.x and Keystone 3
+  [GITHUB-1052]
+  (Anthony Shaw)
+
+- [GCE] Add loadBalancingScheme parameter for
+ ex_create_forwarding_rule method in GCE driver.
+  [GITHUB-1079]
+  (@sT331h0rs3)
+
+- [GCE] Fix error codes not being parsed in certain scenarios
+  [GITHUB-1074, LIBCLOUD-925]
+  (micafer)
+
+- [EC2] Fix node's Block Device Mapping was parsed from incorrect mapping.
+  EbsInstanceBlockDevice is different from EbsBlockDevice.
+  [GITHUB-1075]
+  (Gennadiy Stas)
 
 - [GANDI] Fixes the location name in image and instance type classes
   [GITHUB-1065]
@@ -56,6 +78,10 @@ Compute
 
 Container
 ~~~~~~~~~
+
+- New driver for Google Container Engine
+  [GITHUB-1059]
+  (Andy Maheshwari)
 
 - [KUBERNETES] Fix get_container method responding with None
   [GITHUB-1054]
