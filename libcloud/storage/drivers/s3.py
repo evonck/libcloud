@@ -191,12 +191,12 @@ class S3SignatureV4Connection(SignedAWSConnection, BaseS3Connection):
 
     def __init__(self, user_id, key, secure=True, host=None, port=None,
                  url=None, timeout=None, proxy_url=None, token=None,
-                 retry_delay=None, backoff=None):
+                 retry_delay=None, backoff=None, correlation_id=None):
         super(S3SignatureV4Connection, self).__init__(
             user_id, key, secure, host,
             port, url, timeout, proxy_url,
             token, retry_delay, backoff,
-            4)  # force version 4
+            4, correlation_id)  # force version 4
 
 
 class S3MultipartUpload(object):
@@ -1038,16 +1038,6 @@ class S3USWestOregonStorageDriver(S3StorageDriver):
 class S3USGovWestConnection(S3SignatureV4Connection):
     host = S3_US_GOV_WEST_HOST
 
-<<<<<<< HEAD
-    def __init__(self, user_id, key, secure=True, host=None, port=None,
-                 url=None, timeout=None, proxy_url=None, token=None,
-                 retry_delay=None, backoff=None, correlation_id=None):
-        super(S3CNNorthConnection, self).__init__(
-            user_id, key, secure, host,
-            port, url, timeout, proxy_url,
-            token, retry_delay, backoff,
-            4, correlation_id)  # force version 4
-=======
 
 class S3USGovWestStorageDriver(S3StorageDriver):
     name = 'Amazon S3 (us-gov-west-1)'
@@ -1058,7 +1048,6 @@ class S3USGovWestStorageDriver(S3StorageDriver):
 
 class S3CNNorthConnection(S3SignatureV4Connection):
     host = S3_CN_NORTH_HOST
->>>>>>> trunk
 
 
 class S3CNNorthStorageDriver(S3StorageDriver):
@@ -1140,19 +1129,6 @@ S3APNEStorageDriver = S3APNE1StorageDriver
 
 class S3APNE2Connection(S3SignatureV4Connection):
     host = S3_AP_NORTHEAST2_HOST
-<<<<<<< HEAD
-    service_name = 's3'
-    version = API_VERSION
-
-    def __init__(self, user_id, key, secure=True, host=None, port=None,
-                 url=None, timeout=None, proxy_url=None, token=None,
-                 retry_delay=None, backoff=None, correlation_id=None):
-        super(S3APNE2Connection, self).__init__(user_id, key, secure, host,
-                                                port, url, timeout, proxy_url,
-                                                token, retry_delay, backoff,
-                                                4, correlation_id)  # force version 4
-=======
->>>>>>> trunk
 
 
 class S3APNE2StorageDriver(S3StorageDriver):
